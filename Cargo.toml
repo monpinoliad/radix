@@ -9,13 +9,14 @@ license = "MIT OR Apache-2.0"
 gc9a01-rs = "0.4.2"
 # cst816s = {git = "https://github.com/tstellanova/cst816s.git"}
 
+esp-hal = { version = "=1.0.0-beta.0", features = ["esp32s3", "unstable"] }
+
 esp-backtrace = { version = "0.15.1", features = [
   "esp32s3",
   "exception-handler",
   "panic-handler",
   "println",
 ] }
-esp-hal = { version = "0.23.1", features = ["esp32s3"] }
 esp-println = { version = "0.13.1", features = ["esp32s3", "log"] }
 log = { version = "0.4.21" }
 
@@ -25,9 +26,12 @@ slint = { version = "1.10.0", default-features = false, features = [
   "libm",
   "renderer-software",
 ] }
+
+embedded-hal = "1.0.0"
 embedded-hal-bus = "0.3.0"
 esp-alloc = "0.7.0"
 embedded-graphics = "0.8.1"
+
 
 [profile.dev]
 # Rust debug is too slow.

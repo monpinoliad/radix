@@ -12,12 +12,15 @@ use esp_backtrace as _;
 use esp_hal::{
     clock::CpuClock,
     delay::Delay,
-    gpio::{self, Output},
+    gpio::{self, Output, OutputConfig},
     main,
     spi::master::Spi,
-    time::RateExtU32,
+    time::Rate,
     timer::systimer::SystemTimer,
 };
+
+// use embedded_hal::delay::DelayNs;
+
 use gc9a01::{
     mode::DisplayConfiguration,
     prelude::{DisplayResolution240x240, DisplayRotation},
@@ -46,16 +49,16 @@ fn main() -> ! {
     // ---- Initialization ----
 
     // Setting the Reset pin voltage to zero (0)
-    let mut led_reset = Output::new(reset, gpio::Level::Low);
+    let mut led_reset = Output::new(reset, gpio::Level::Low, OutputConfig::default());
 
     // Setting the Chip Selection pin voltage to zero (0)
-    let cs_output = Output::new(cs, gpio::Level::Low);
+    let cs_output = Output::new(cs, gpio::Level::Low, OutputConfig::default());
 
     // Setting the Command/Data Selection pin voltage to zero (0)
-    let dc_output = Output::new(dc, gpio::Level::Low);
+    let dc_output = Output::new(dc, gpio::Level::Low, OutputConfig::default());
 
     // Turning on the Backlight after initialization
-    Output::new(backlight, gpio::Level::High);
+    Output::new(backlight, gpio::Level::High, OutputConfig::default());
 
     // Initializing SPI API of esp_hal through peripherals.SPI2 (ESP32 hardware SPI interface)
     // Typically used when you're talking to devices such as LCD Displays, SD cards, sensors, flash memory chips.
@@ -64,7 +67,7 @@ fn main() -> ! {
         // Create config for spi peripheral: Clock Polarity = 0, phase = 0
         esp_hal::spi::master::Config::default()
             .with_mode(esp_hal::spi::Mode::_0) // use SPI mode 0 where we idle clock to low
-            .with_frequency(20_u32.MHz()), // Set SPI clock to 20 MHz (handy extension method to turn 20 into 20_000_000 Hz.)
+            .with_frequency(Rate::from_mhz(20)), // Set SPI clock to 20 MHz (handy extension method to turn 20 into 20_000_000 Hz.)
     )
     .unwrap() // If it fails, it panicks!
     .with_mosi(mosi) // Setting GPIO (Master Out Slave In)
@@ -151,8 +154,6 @@ impl slint::platform::Platform for EspBackend {
 
     // This tells Slint how much time has passed since the application started.
     fn duration_since_start(&self) -> core::time::Duration {
-        core::time::Duration::from_millis(
-            esp_hal::time::now().ticks() / (SystemTimer::ticks_per_second() / 1000),
-        )
+        core::time::Duration::from_micros(SystemTimer::ticks_per_second())
     }
 }
