@@ -116,7 +116,7 @@ fn main() -> ! {
 
     // Allocates one line (row) of RGB565 pixels.
     // Used as a scratch buffer to hold each rendered scanline before writing it to the screen.
-    let mut line_buffer = [slint::platform::software_renderer::Rgb565Pixel(0); 240 as usize];
+    let mut line_buffer = [slint::platform::software_renderer::Rgb565Pixel(0); 240]; // Casting to usize is unecessary // as usize];
 
     loop {
         // This updates internal Slint timers, animations, and transitions.
